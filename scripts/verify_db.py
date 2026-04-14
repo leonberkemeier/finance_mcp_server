@@ -27,7 +27,7 @@ has_components = getattr(db, "_components", None) is not None
 print("SQLAlchemy available:", has_components)
 
 # Try to fetch a sample ticker row using the helper
-sample_ticker = "AAPL"
+sample_ticker = "META"
 result = db.get_risk_by_ticker(sample_ticker)
 if result:
     print(f"DB row for {sample_ticker}:", json.dumps(result, indent=2))

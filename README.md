@@ -26,22 +26,34 @@ Current Available Tools for the LLM:
 
 ---
 
-## 🚀 How to Run It
+## 🚀 How to Run & Deploy It
 
-1. **Install Dependencies:**
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate
-   pip install -r requirements.txt
-   ```
+### 1. Local Testing (STDIO)
+For local editors (like Cursor or VS Code) that connect to an MCP server via standard input/output:
+```bash
+export MCP_TRANSPORT="stdio"
+python mcp_server.py
+```
 
-2. **Start the MCP Server:**
-   For local testing, the `fastmcp` application can be tested via STDIO or SSE. During production, we will host this over HTTP Server-Sent Events (SSE) so the remote Tailscale AI PC can reach it.
-   
-   To run manually for testing:
-   ```bash
-   python mcp_server.py
-   ```
+### 2. Network Deployment (Tailscale / AI PC / Remote) 
+To deploy this server across your network so your remote AI PC ML Node (Gemma 4 etc.) can call the tools as REST requests, use `sse` (Server-Sent Events) transport.
+
+This requires `uvicorn` and `fastapi`:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+pip install fastapi uvicorn  # Ensure these are installed for SSE
+```
+
+Run the server on all network interfaces via port 8000:
+```bash
+export MCP_TRANSPORT="sse"
+export MCP_PORT="8000"
+python mcp_server.py
+```
+
+Your remote AI Node can then connect an MCP Client to `http://<TAILSCALE_IP>:8000/sse` to start calling the Webserver's Database Tools autonomously.
 
    ## ⚙️ Configuration (.env)
 

@@ -116,6 +116,14 @@ def get_macro_economic_indicators() -> str:
 if __name__ == "__main__":
     # You can run this file directly to test it via 'stdio' 
     # Or, in production via Tailscale, we will run this Server using Server-Sent Events (SSE).
-    # To run via SSE: `mcp dev mcp_server.py` or use a wrapper framework.
-    logger.info("Starting FinancialDataHub MCP Server...")
-    mcp.run(transport="stdio")
+    transport = os.environ.get("MCP_TRANSPORT", "stdio")
+    port = int(os.environ.get("MCP_PORT", 8000))
+    
+    logger.info(f"Starting FinancialDataHub MCP Server (Transport: {transport})...")
+    
+    if transport == "sse":
+        # Binds to all network interfaces so Tailscale/remote nodes can reach it
+        mcp.run(transport="sse", host="0.0.0.0", port=port)
+    else:
+        mcp.run(transport="stdio")
+
