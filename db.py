@@ -2,6 +2,15 @@ import os
 from pathlib import Path
 from typing import Optional, Dict, Any
 
+# Optionally load .env if python-dotenv is installed. This keeps behaviour predictable
+# for developers who prefer a local .env file. If python-dotenv is not installed we
+# silently continue and rely on environment variables.
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).parent / ".env")
+except Exception:
+    pass
+
 try:
     from sqlalchemy import create_engine, Column, Integer, String, Float
     from sqlalchemy.orm import sessionmaker, declarative_base
@@ -10,7 +19,9 @@ except Exception:  # pragma: no cover - allow the module to be imported without 
 
 
 # Database configuration
+# Default DB path lives next to this module; override with the DATABASE_URL env var.
 DEFAULT_DB_PATH = Path(__file__).parent / "financial_data.db"
+# Respect DATABASE_URL from environment (including values loaded from .env above).
 DATABASE_URL = os.environ.get("DATABASE_URL", f"sqlite:///{DEFAULT_DB_PATH}")
 
 

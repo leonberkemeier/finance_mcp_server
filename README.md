@@ -43,6 +43,23 @@ Current Available Tools for the LLM:
    python mcp_server.py
    ```
 
+   ## ⚙️ Configuration (.env)
+
+   The application reads the `DATABASE_URL` environment variable to locate the relational database used by the MCP tools.
+   You can set `DATABASE_URL` in your environment, or create a local `.env` file (use the example `.env.example` included in this folder).
+
+   Examples:
+
+   zsh
+   ```bash
+   # Absolute path to an sqlite DB file
+   export DATABASE_URL="sqlite:////home/archy/Desktop/Server/FinancialData/webserver_api/financial_data.db"
+
+   # Or create a `.env` file with the same content (and optionally install python-dotenv).
+   ```
+
+   If `python-dotenv` is installed, the code will automatically attempt to load a `.env` file from this folder.
+
 ---
 
 ## ⏭️ Next Development Steps
