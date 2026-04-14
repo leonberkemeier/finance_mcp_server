@@ -123,7 +123,10 @@ if __name__ == "__main__":
     
     if transport == "sse":
         # Binds to all network interfaces so Tailscale/remote nodes can reach it
-        mcp.run(transport="sse", host="0.0.0.0", port=port)
+        # We use uvicorn explicitly or just let fastmcp handle the transport
+        # Note: older versions of FastMCP don't accept host/port directly in .run()
+        print(f"To bind to 0.0.0.0:{port} in production, you can also run: `mcp run mcp_server.py --transport sse --port {port}`")
+        mcp.run(transport="sse")
     else:
         mcp.run(transport="stdio")
 
