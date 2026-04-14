@@ -87,20 +87,14 @@ def get_quantitative_risk(ticker: str) -> str:
         })
 
 @mcp.tool()
-def search_filings_and_earnings(ticker: str, query: str) -> str:
+def search_filings(ticker: str, query: str) -> str:
     """
-    Performs a semantic vector search over the company's recent SEC EDGAR filings, 10-Ks, and earnings calls.
-    Use this tool SECOND to retrieve qualitative fundamental sentiment regarding a specific query (e.g. "AI revenue guidance").
+    Searches the Vector Database for news/SEC filings.
     """
-    logger.info(f"[TOOL CALLED] search_filings_and_earnings for {ticker} with query: '{query}'")
+    logger.info(f"[TOOL CALLED] search_filings for {ticker} with query: '{query}'")
     
     # TODO: Connect to the actual Vector DB (pgvector / ChromaDB)
-    # For now, we return a mocked RAG chunk to simulate finding CEO quotes
-    return (
-        f"Retrieval Context for {ticker} | Query: '{query}'\n"
-        f"Snippet 1 (from Q3 Earnings Call): 'We are extremely optimistic about the fundamental demand in the upcoming year. "
-        f"Our forward guidance looks incredibly strong despite macroeconomic headwinds.'"
-    )
+    return "Strong Q1 Earnings reported..."
 
 @mcp.tool()
 def get_macro_economic_indicators() -> str:
@@ -115,6 +109,11 @@ def get_macro_economic_indicators() -> str:
 
 if __name__ == "__main__":
     import os
+    import threading
+    import uvicorn
+    import logging
+    from rest_api import app as rest_app
+    
     transport = os.environ.get("MCP_TRANSPORT", "stdio")
     port = int(os.environ.get("MCP_PORT", 8000))
     host = os.environ.get("MCP_HOST", "0.0.0.0")
@@ -122,13 +121,21 @@ if __name__ == "__main__":
     logger.info(f"Starting FinancialDataHub MCP Server (Transport: {transport})...")
     
     if transport == "sse":
+        print(f"Starting standard REST API endpoints (Pipeline HTTP interface) on {host}:{8000} (via background thread)...")
+        def run_rest():
+            uvicorn.run(rest_app, host=host, port=8000, log_level="warning")
+        
+        # Start REST API in background
+        t = threading.Thread(target=run_rest, daemon=True)
+        t.start()
+        
         print(f"Starting SSE Server via native FastMCP on {host}:{port} ...")
         # Explicitly configure the internal server object
         mcp.settings.host = host
         mcp.settings.port = port
         
         # Disable DNS rebinding blocks for the Tailscale / Remote network use cases
-        if mcp.settings.transport_security:
+        if hasattr(mcp.settings, "transport_security") and mcp.settings.transport_security:
             mcp.settings.transport_security.allowed_hosts = ["*"]
             mcp.settings.transport_security.allowed_origins = ["*"]
             
