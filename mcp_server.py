@@ -124,9 +124,9 @@ if __name__ == "__main__":
     logger.info(f"Starting FinancialDataHub MCP Server (Transport: {transport})...")
     
     if transport == "sse":
-        print(f"Starting standard REST API endpoints (Pipeline HTTP interface) on {host}:{8001} (via background thread)...")
+        print(f"Starting standard REST API endpoints (Pipeline HTTP interface) on {host}:{9875} (via background thread)...")
         def run_rest():
-            uvicorn.run(rest_app, host=host, port=8001, log_level="warning")
+            uvicorn.run(rest_app, host=host, port=9875, log_level="warning")
         
         # Start REST API in background
         t = threading.Thread(target=run_rest, daemon=True)
