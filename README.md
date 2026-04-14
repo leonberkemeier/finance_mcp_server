@@ -50,6 +50,7 @@ Run the server on all network interfaces via port 8000:
 ```bash
 export MCP_TRANSPORT="sse"
 export MCP_PORT="8000"
+export DATABASE_URL="sqlite:////opt/finance_mcp_server/financial_data.db"
 python mcp_server.py
 ```
 
@@ -65,7 +66,7 @@ Your remote AI Node can then connect an MCP Client to `http://<TAILSCALE_IP>:800
    zsh
    ```bash
    # Absolute path to an sqlite DB file
-   export DATABASE_URL="sqlite:////home/archy/Desktop/Server/FinancialData/webserver_api/financial_data.db"
+   export DATABASE_URL="sqlite:////path/to/the/database.db"
 
    # Or create a `.env` file with the same content (and optionally install python-dotenv).
    ```

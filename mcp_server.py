@@ -122,11 +122,8 @@ if __name__ == "__main__":
     logger.info(f"Starting FinancialDataHub MCP Server (Transport: {transport})...")
     
     if transport == "sse":
-        # Binds to all network interfaces so Tailscale/remote nodes can reach it
-        # We use uvicorn explicitly or just let fastmcp handle the transport
-        # Note: older versions of FastMCP don't accept host/port directly in .run()
-        print(f"To bind to 0.0.0.0:{port} in production, you can also run: `mcp run mcp_server.py --transport sse --port {port}`")
-        mcp.run(transport="sse")
+        print(f"Starting SSE Server via native FastMCP at http://0.0.0.0:{port}/sse")
+        mcp.run(transport="sse", port=port, host="0.0.0.0")
     else:
         mcp.run(transport="stdio")
 
