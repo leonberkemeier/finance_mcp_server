@@ -57,6 +57,10 @@ def get_quantitative_risk(ticker: str) -> str:
                 "var_95": data.get("var_95"),
                 "expected_return": data.get("expected_return"),
                 "regime": data.get("regime"),
+                "beta": data.get("beta"),
+                "pe_ratio": data.get("pe_ratio"),
+                "last_close": data.get("last_close"),
+                "data_status": data.get("data_status"),
             })
 
     # Fallback mocked responses if DB not available or no row found
