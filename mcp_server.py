@@ -9,16 +9,16 @@ try:
     from mcp.server.fastmcp import FastMCP
 except Exception:  # pragma: no cover - fallback when `mcp` package is not installed
     class FastMCP:  # minimal stub used for local testing
-        def __init__(self, name: str):
+        def __init__(self, name: str, **kwargs):
             self.name = name
 
         def tool(self):
             def decorator(fn):
                 return fn
-
             return decorator
 
         def run(self, *args, **kwargs):
+            print("WARNING: 'mcp' package is not installed. This is a dummy run() that does nothing.")
             return None
 
 
@@ -114,16 +114,25 @@ def get_macro_economic_indicators() -> str:
     return "US Macro Data: Interest Rates=4.5%, Inflation (CPI)=2.8%, GDP Growth=2.1%. The environment favors technology and growth equities."
 
 if __name__ == "__main__":
-    # You can run this file directly to test it via 'stdio' 
-    # Or, in production via Tailscale, we will run this Server using Server-Sent Events (SSE).
+    import os
     transport = os.environ.get("MCP_TRANSPORT", "stdio")
     port = int(os.environ.get("MCP_PORT", 8000))
-    
+    host = os.environ.get("MCP_HOST", "0.0.0.0")
+        
     logger.info(f"Starting FinancialDataHub MCP Server (Transport: {transport})...")
     
     if transport == "sse":
-        print(f"Starting SSE Server via native FastMCP at http://0.0.0.0:{port}/sse")
-        mcp.run(transport="sse", port=port, host="0.0.0.0")
+        print(f"Starting SSE Server via native FastMCP on {host}:{port} ...")
+        # Explicitly configure the internal server object
+        mcp.settings.host = host
+        mcp.settings.port = port
+        
+        # Disable DNS rebinding blocks for the Tailscale / Remote network use cases
+        if mcp.settings.transport_security:
+            mcp.settings.transport_security.allowed_hosts = ["*"]
+            mcp.settings.transport_security.allowed_origins = ["*"]
+            
+        mcp.run(transport="sse")
     else:
         mcp.run(transport="stdio")
 
